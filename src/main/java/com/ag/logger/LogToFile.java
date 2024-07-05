@@ -1,9 +1,14 @@
 package com.ag.logger;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import com.ag.property.LoggerProperties;
 
 /**
  * @author umair.ali
@@ -21,23 +26,24 @@ import java.util.TimerTask;
 public class LogToFile {
 	private Process tailProcess = null;
 	private Timer timer;
-//	private static final long TIMEOUT = 5 * 60 * 1000;
-	private static final long TIMEOUT = 10000;
-	
+	private static final long TIMEOUT = Long.parseLong(LoggerProperties.getProperty("timeout")) * 60 * 1000;
+
 	// Method to start the tail process
 	public void startTailing() throws IOException {
-		if(tailProcess == null) {
+		if (tailProcess == null) {
+			rollLogFile();
+
 			ProcessBuilder processBuilder = new ProcessBuilder("tail", "-f",
-					"/mnt/8EFED7B1FED79037/UBUNTU-BACKUP/Desktop/ag-mw-logs/temp.log");
-			processBuilder.redirectOutput(ProcessBuilder.Redirect
-					.to(new java.io.File("/mnt/8EFED7B1FED79037/UBUNTU-BACKUP/Desktop/ag-mw-logs/test.log")));
+					LoggerProperties.getProperty("log.from.path"));
+			processBuilder.redirectOutput(
+					ProcessBuilder.Redirect.to(new java.io.File(LoggerProperties.getProperty("log.to.path"))));
 			tailProcess = processBuilder.start();
 			System.out.println("Tail process started.");
 			startTimer();
-		}else {
+		} else {
 			System.out.println("Tail Process Already Running.");
 		}
-		
+
 	}
 
 	// Method to stop the tail process
@@ -69,6 +75,22 @@ public class LogToFile {
 		if (timer != null) {
 			timer.cancel();
 			timer = null;
+		}
+	}
+
+	// Method to roll the log file if it exists
+	private void rollLogFile() {
+		File logFile = new File(LoggerProperties.getProperty("log.to.path"));
+		if (logFile.exists()) {
+			String date = new SimpleDateFormat(LoggerProperties.getProperty("file.rolling.log.to.path.date.format"))
+					.format(new Date());
+			File newLogFile = new File(
+					LoggerProperties.getProperty("file.rolling.log.to.path").replaceAll("@DATE", date));
+			if (logFile.renameTo(newLogFile)) {
+				System.out.println("Log file rolled to: " + newLogFile.getName());
+			} else {
+				System.out.println("Failed to roll the log file.");
+			}
 		}
 	}
 

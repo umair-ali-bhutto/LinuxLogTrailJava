@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Log Tailer</title>
+</head>
+<body>
+    <h1>Log Tailer</h1>
+    <button onclick="startTailing()">Start</button>
+    <button onclick="stopTailing()">Stop</button>
+
+    <script>
+        function startTailing() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "LogControlServlet");
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log(xhr.responseText);
+                    alert(xhr.responseText);
+                }
+            };
+            xhr.send("command=start");
+        }
+
+        function stopTailing() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "LogControlServlet");
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log(xhr.responseText);
+                    alert(xhr.responseText);
+                }
+            };
+            xhr.send("command=stop");
+        }
+    </script>
+</body>
+</html>

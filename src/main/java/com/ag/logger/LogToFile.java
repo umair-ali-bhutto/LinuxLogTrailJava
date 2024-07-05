@@ -24,9 +24,9 @@ import com.ag.property.LoggerProperties;
  */
 
 public class LogToFile {
-	private Process tailProcess = null;
-	private Timer timer;
-	private static final long TIMEOUT = Long.parseLong(LoggerProperties.getProperty("timeout")) * 60 * 1000;
+	public Process tailProcess = null;
+	public Timer timer;
+	public static final long TIMEOUT = Long.parseLong(LoggerProperties.getProperty("timeout")) * 60 * 1000;
 
 	// Method to start the tail process
 	public void startTailing() throws IOException {
@@ -59,7 +59,7 @@ public class LogToFile {
 	}
 
 	// Method to start the timeout timer
-	private void startTimer() {
+	public void startTimer() {
 		timer = new Timer(true);
 		timer.schedule(new TimerTask() {
 			@Override
@@ -71,7 +71,7 @@ public class LogToFile {
 	}
 
 	// Method to stop the timeout timer
-	private void stopTimer() {
+	public void stopTimer() {
 		if (timer != null) {
 			timer.cancel();
 			timer = null;
@@ -79,7 +79,7 @@ public class LogToFile {
 	}
 
 	// Method to roll the log file if it exists
-	private void rollLogFile() {
+	public void rollLogFile() {
 		File logFile = new File(LoggerProperties.getProperty("log.to.path"));
 		if (logFile.exists()) {
 			String date = new SimpleDateFormat(LoggerProperties.getProperty("file.rolling.log.to.path.date.format"))
